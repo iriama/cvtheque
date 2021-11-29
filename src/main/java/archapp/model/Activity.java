@@ -2,6 +2,8 @@ package archapp.model;
 
 
 import archapp.enumeration.ActivityType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +21,8 @@ public class Activity {
     @NotNull private String title;
     private String description;
     private String website;
-    @ManyToOne private User owner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User owner;
 
     public Activity(User owner, int year, ActivityType type, String title) {
         this.owner = owner;
