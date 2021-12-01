@@ -5,10 +5,12 @@ import archapp.model.Activity;
 import archapp.model.User;
 import archapp.repository.ActivityRepository;
 import archapp.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
@@ -25,11 +27,14 @@ public class SpringConfiguration extends SpringBootServletInitializer {
         return application.sources(Starter.class);
     }
 
-
-
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         super.onStartup(servletContext);
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
     @Autowired private UserRepository userRepository;

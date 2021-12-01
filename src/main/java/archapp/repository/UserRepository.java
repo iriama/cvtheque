@@ -20,5 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select distinct u from Activity a, User u where a.owner = u and a.type = archapp.enumeration.ActivityType.PROFESSIONAL and upper(a.title) like upper(concat('%', :activityTitle, '%'))")
     Page<User> searchByActivityTitle(@Param("activityTitle") String title, Pageable pageable);
     User findUserById(Long id);
+    User findByEmail(String email);
+    boolean existsByEmail(String email);
+    void deleteByEmail(String email);
 }
 
