@@ -2,15 +2,12 @@ package archapp.web;
 
 import archapp.model.User;
 import archapp.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.parameters.P;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
@@ -27,5 +24,10 @@ public class PersonController {
             return userRepository.searchByActivityTitle(activity,PageRequest.of(page-1,10)).toList();
 
         return userRepository.findAll(PageRequest.of(page - 1, 10)).toList();
+    }
+
+    @GetMapping("/persons/{id}")
+    public User getUserById(@PathVariable(value="id") Long id){
+        return userRepository.findUserById(id);
     }
 }

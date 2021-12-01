@@ -22,6 +22,8 @@ public class Activity {
     private String description;
     private String website;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_activity")
+    @JsonBackReference
     private User owner;
 
     public Activity(User owner, int year, ActivityType type, String title) {
