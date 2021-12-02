@@ -1,12 +1,9 @@
 package archapp.model;
 
 import archapp.enumeration.ActivityType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Formula;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -25,13 +22,10 @@ public class User {
     private String lastname;
     @NotNull @Email private String email;
     private String website;
-    @JsonIgnore
     private LocalDate birthdate;
-    @JsonIgnore
     @NotNull private String password;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner")
-    @JsonManagedReference
     private List<Activity> activities = new ArrayList<>();
 
     @Transient

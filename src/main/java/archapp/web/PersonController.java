@@ -1,33 +1,41 @@
 package archapp.web;
 
+import archapp.dto.UserDto;
+import archapp.dto.UserMinimalDto;
 import archapp.model.User;
 import archapp.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class PersonController {
-    @Autowired
-    private UserRepository userRepository;
+
+    private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
+
     @GetMapping("/persons")
-    public List<User> persons(@RequestParam(value = "page", defaultValue = "1") Integer page, @RequestParam(value="name", required = false) String name,@RequestParam(value="activity", required = false) String activity) {
+    public List<UserMinimalDto> persons(@RequestParam(value = "page", defaultValue = "1") Integer page, @RequestParam(value="name", required = false) String name, @RequestParam(value="activity", required = false) String activity) {
+        Page<User> result;
         if (page < 1) page = 1;
         if (name != null && !name.isEmpty())
-            return userRepository.searchByName(name, PageRequest.of(page - 1, 10)).toList();
+            result = userRepository.searchByName(name, PageRequest.of(page - 1, 10));
         if(activity!=null && !activity.isEmpty())
-            return userRepository.searchByActivityTitle(activity,PageRequest.of(page-1,10)).toList();
+            result = userRepository.searchByActivityTitle(activity,PageRequest.of(page-1,10));
+        else
+            result = userRepository.findAll(PageRequest.of(page - 1, 10));
 
-        return userRepository.findAll(PageRequest.of(page - 1, 10)).toList();
+        return result.stream().map(u -> modelMapper.map(u, UserMinimalDto.class)).collect(Collectors.toList());
     }
 
     @GetMapping("/persons/{id}")
-    public User getUserById(@PathVariable(value="id") Long id){
-        return userRepository.findUserById(id);
+    public UserDto getUserById(@PathVariable(value="id") Long id){
+        return modelMapper.map(userRepository.findUserById(id), UserDto.class);
     }
 }

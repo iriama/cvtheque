@@ -13,6 +13,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -40,11 +41,13 @@ public class SpringConfiguration extends SpringBootServletInitializer {
     @Autowired private UserRepository userRepository;
     @Autowired private ActivityRepository activityRepository;
 
+    @Autowired private PasswordEncoder passwordEncoder;
+
     @EventListener(ApplicationReadyEvent.class)
     public void afterStartup() {
-        User user1 = new User("amairi.hatem@gmail.com", "test123","Amairi","hatem","https://google.com");
-        User user2 = new User("aziz2512@gmail.com", "test13","Aziz","ndiaye","ndiaye.com");
-        User user3 = new User("amairi.ndiaye@gmail.com", "test1","essaie","tester","notresite.com");
+        User user1 = new User("amairi.hatem@gmail.com", passwordEncoder.encode("test123"),"Amairi","hatem","https://google.com");
+        User user2 = new User("aziz2512@gmail.com", passwordEncoder.encode("test13"),"Aziz","ndiaye","ndiaye.com");
+        User user3 = new User("amairi.ndiaye@gmail.com", passwordEncoder.encode("test1"),"essaie","tester","notresite.com");
         Activity activity1 = new Activity(user1, 2020, ActivityType.PERSONAL, "projet jee");
         Activity activity2 = new Activity(user1, 2019, ActivityType.PROFESSIONAL, "Ingénieur fullstack");
         Activity activity3 = new Activity(user1, 2020, ActivityType.PROFESSIONAL, "Ingénieur spring");
@@ -66,7 +69,7 @@ public class SpringConfiguration extends SpringBootServletInitializer {
         for (int i = 0; i<100; i++) {
             userRepository.save(new User(
                     "user" + i + "gmail.com",
-                    "password" + i,
+                    passwordEncoder.encode("password" + i),
                     "Firstname" + i,
                     "Lastname" + i,
                     "https://site" + i + ".com"
