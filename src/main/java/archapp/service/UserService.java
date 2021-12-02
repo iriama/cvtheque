@@ -24,43 +24,43 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public String signin(String username, String password) {
+    public String signin(String login, String password) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            return jwtTokenProvider.createToken(username);
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
+            return jwtTokenProvider.createToken(login);
         } catch (AuthenticationException e) {
-            throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("Invalid login/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    public String signup(User appUser) {
-        if (!userRepository.existsByEmail(appUser.getEmail())) {
-            appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-            userRepository.save(appUser);
-            return jwtTokenProvider.createToken(appUser.getEmail());
+    public String signup(User user) {
+        if (!userRepository.existsByEmail(user.getEmail())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+            return jwtTokenProvider.createToken(user.getEmail());
         } else {
-            throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("Login is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    public void delete(String username) {
-        userRepository.deleteByEmail(username);
+    public void delete(String login) {
+        userRepository.deleteByEmail(login);
     }
 
-    public User search(String username) {
-        User appUser = userRepository.findByEmail(username);
-        if (appUser == null) {
+    public User search(String login) {
+        User user = userRepository.findByEmail(login);
+        if (user == null) {
             throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
         }
-        return appUser;
+        return user;
     }
 
     public User whoami(HttpServletRequest req) {
-        return userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
+        return userRepository.findByEmail(jwtTokenProvider.getLogin(jwtTokenProvider.resolveToken(req)));
     }
 
-    public String refresh(String username) {
-        return jwtTokenProvider.createToken(username);
+    public String refresh(String login) {
+        return jwtTokenProvider.createToken(login);
     }
 
 }
