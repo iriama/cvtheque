@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 @Configuration
 @EnableWebSecurity
@@ -28,19 +31,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Disable CSRF (cross site request forgery)
         http.csrf().disable();
 
-        // CORS
-        http.cors();
-
         // No session will be created or used by spring security
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         // Entry points
         http.authorizeRequests()//
-                .antMatchers("/").permitAll()//
-                .antMatchers("/api/signin").permitAll()//
-                .antMatchers("/api/signup").permitAll()//
-                // Disallow everything else..
-                .anyRequest().authenticated();
+                .antMatchers("/api/secure/**").authenticated()//
+                // Allow everything else..
+                .anyRequest().permitAll();
 
         // If a user try to access a resource without having enough permissions
         http.exceptionHandling().accessDeniedPage("/login");
@@ -50,14 +48,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Optional, if you want to test the API from a browser
         // http.httpBasic();
+        //http.cors();
     }
+
 
     @Override
     public void configure(WebSecurity web) {
         // Allow swagger to be accessed without authentication
         web.ignoring()
-                .antMatchers("/static/**")//
-
                 // Un-secure H2 Database (for testing purposes, H2 console shouldn't be unprotected in production)
                 .and()
                 .ignoring()
