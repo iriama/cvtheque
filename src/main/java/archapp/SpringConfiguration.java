@@ -66,7 +66,7 @@ public class SpringConfiguration extends SpringBootServletInitializer {
         activityRepository.save(activity5);
 
 
-        for (int i = 0; i<100; i++) {
+        /*for (int i = 0; i<100; i++) {
             userRepository.save(new User(
                     "user" + i + "gmail.com",
                     passwordEncoder.encode("password" + i),
@@ -74,7 +74,7 @@ public class SpringConfiguration extends SpringBootServletInitializer {
                     "Lastname" + i,
                     "https://site" + i + ".com"
             ));
-        }
+        }*/
     }
 
 }
