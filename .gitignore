@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Static files ###
-**/src/main/resources/static/
+**/src/main/resources/static/*
