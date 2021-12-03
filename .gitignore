@@ -31,4 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/static/
+
+# static folder
+/src/main/resources/static/*
+# except structure
+!/src/main/resources/static/.gitkeep
+
