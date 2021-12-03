@@ -39,7 +39,7 @@ public class SpaRedirectFilterConfiguration {
                 String path = req.getRequestURI().substring(req.getContextPath().length());
                 if (
                         !path.equals("/") && // ignore '/'
-                        !path.matches("^/api(-[a-z])*/.*") && // ignore api routes
+                        !path.matches("^/api(-[a-z]+)?/.*") && // ignore api routes
                         !resourceLoader.getResource("classpath:/static" + path).exists() // ignore static files
                 ) {
                     LOGGER.info("redirecting {} to SPA...", path);
