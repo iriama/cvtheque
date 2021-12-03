@@ -1,7 +1,7 @@
 package archapp.web;
 
-import archapp.dto.UserDto;
-import archapp.dto.UserMinimalDto;
+import archapp.dto.PersonDto;
+import archapp.dto.PersonMinimalDto;
 import archapp.model.User;
 import archapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,7 @@ public class PersonController {
     private final UserRepository userRepository;
 
     @GetMapping("/persons")
-    public List<UserMinimalDto> persons(@RequestParam(value = "page", defaultValue = "1") Integer page, @RequestParam(value="name", required = false) String name, @RequestParam(value="activity", required = false) String activity) {
+    public List<PersonMinimalDto> persons(@RequestParam(value = "page", defaultValue = "1") Integer page, @RequestParam(value="name", required = false) String name, @RequestParam(value="activity", required = false) String activity) {
         Page<User> result;
         if (page < 1) page = 1;
         if (name != null && !name.isEmpty())
@@ -31,11 +33,11 @@ public class PersonController {
         else
             result = userRepository.findAll(PageRequest.of(page - 1, 10));
 
-        return result.stream().map(u -> modelMapper.map(u, UserMinimalDto.class)).collect(Collectors.toList());
+        return result.stream().map(u -> modelMapper.map(u, PersonMinimalDto.class)).collect(Collectors.toList());
     }
 
     @GetMapping("/persons/{id}")
-    public UserDto getUserById(@PathVariable(value="id") Long id){
-        return modelMapper.map(userRepository.findUserById(id), UserDto.class);
+    public PersonDto getUserById(@PathVariable(value="id") Long id, HttpServletRequest req){
+        return modelMapper.map(userRepository.findUserById(id), PersonDto.class);
     }
 }

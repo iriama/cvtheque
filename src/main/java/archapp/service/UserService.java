@@ -56,7 +56,9 @@ public class UserService {
     }
 
     public User whoami(HttpServletRequest req) {
-        return userRepository.findByEmail(jwtTokenProvider.getLogin(jwtTokenProvider.resolveToken(req)));
+        String token = jwtTokenProvider.resolveToken(req);
+        if (token == null) return null;
+        return userRepository.findByEmail(jwtTokenProvider.getLogin(token));
     }
 
     public String refresh(String login) {

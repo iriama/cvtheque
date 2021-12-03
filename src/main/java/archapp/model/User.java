@@ -1,6 +1,7 @@
 package archapp.model;
 
 import archapp.enumeration.ActivityType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;

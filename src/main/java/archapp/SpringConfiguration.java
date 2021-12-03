@@ -65,7 +65,6 @@ public class SpringConfiguration extends SpringBootServletInitializer {
         activityRepository.save(activity4);
         activityRepository.save(activity5);
 
-
         /*for (int i = 0; i<100; i++) {
             userRepository.save(new User(
                     "user" + i + "gmail.com",

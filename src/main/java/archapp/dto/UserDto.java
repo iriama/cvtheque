@@ -3,11 +3,10 @@ package archapp.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-public class UserDto extends UserMinimalDto {
-    private int age;
-    private List<ActivityDto> activities;
+public class UserDto extends PersonDto {
+    private LocalDate birthdate;
 }

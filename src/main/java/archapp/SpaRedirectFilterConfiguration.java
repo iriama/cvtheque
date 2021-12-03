@@ -38,8 +38,8 @@ public class SpaRedirectFilterConfiguration {
             protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
                 String path = req.getRequestURI().substring(req.getContextPath().length());
                 if (
-                        !path.equals("/") && // ignore '/'
-                        !path.matches("^/api(-[a-z]+)?/.*") && // ignore api routes
+                        !path.equals("/") &&  !path.equals("/error") && // ignore '/' and '/error'
+                        !path.matches("^/api/.*") && // ignore api routes
                         !resourceLoader.getResource("classpath:/static" + path).exists() // ignore static files
                 ) {
                     LOGGER.info("redirecting {} to SPA...", path);
@@ -47,6 +47,7 @@ public class SpaRedirectFilterConfiguration {
                     rd.forward(req, res);
                 } else {
                     chain.doFilter(req, res);
+                    return;
                 }
             }
         };

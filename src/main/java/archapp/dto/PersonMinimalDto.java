@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class UserMinimalDto {
+public class PersonMinimalDto {
     private long id;
     private String firstname;
     private String lastname;
