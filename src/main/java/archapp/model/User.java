@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -26,18 +27,19 @@ public class User {
     private LocalDate birthdate;
     @NotNull private String password;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
     private List<Activity> activities = new ArrayList<>();
 
     @Transient
     private int age;
     @Transient
-    private List<String> professionalTitles = new ArrayList<>();
+    private List<String> professionalTitles;
 
     @PostLoad
-    private void onLoad() {
-        activities.sort( (a, b) -> b.getYear() - a.getYear()  );
+    public void calculate() {
+        activities.sort( (a, b) -> b.getYear() == a.getYear() ? b.getUpdatedOn().compareTo(a.getUpdatedOn()) : b.getYear() > a.getYear() ? 1 : -1 );
         if (birthdate != null) setAge(Period.between(birthdate, LocalDate.now()).getYears());
+        professionalTitles = new ArrayList<>();
         for (Activity activity: activities) {
             if (activity.getType() == ActivityType.PROFESSIONAL)
                 professionalTitles.add(activity.getTitle());

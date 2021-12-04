@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ActivityDto {
-    private long id;
+    private Long id;
     private String title;
     private String description;
     private ActivityType type;

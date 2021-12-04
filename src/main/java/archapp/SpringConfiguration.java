@@ -5,6 +5,7 @@ import archapp.model.Activity;
 import archapp.model.User;
 import archapp.repository.ActivityRepository;
 import archapp.repository.UserRepository;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -35,7 +36,9 @@ public class SpringConfiguration extends SpringBootServletInitializer {
 
     @Bean
     public ModelMapper modelMapper() {
-        return new ModelMapper();
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        return mapper;
     }
 
     @Autowired private UserRepository userRepository;
@@ -45,8 +48,8 @@ public class SpringConfiguration extends SpringBootServletInitializer {
 
     @EventListener(ApplicationReadyEvent.class)
     public void afterStartup() {
-        User user1 = new User("amairi.hatem@gmail.com", passwordEncoder.encode("test123"),"Amairi","hatem","https://google.com");
-        User user2 = new User("aziz2512@gmail.com", passwordEncoder.encode("test13"),"Aziz","ndiaye","ndiaye.com");
+        User user1 = new User("amairi.hatem@gmail.com", passwordEncoder.encode("test123"),"hatem","Amairi","https://google.com");
+        User user2 = new User("aziz2512@gmail.com", passwordEncoder.encode("test13"),"ndiaye","Aziz","ndiaye.com");
         User user3 = new User("amairi.ndiaye@gmail.com", passwordEncoder.encode("test1"),"essaie","tester","notresite.com");
         Activity activity1 = new Activity(user1, 2020, ActivityType.PERSONAL, "projet jee");
         Activity activity2 = new Activity(user1, 2019, ActivityType.PROFESSIONAL, "Ingénieur fullstack");
