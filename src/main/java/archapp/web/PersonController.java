@@ -28,7 +28,7 @@ public class PersonController {
         if (page < 1) page = 1;
         if (name != null && !name.isEmpty())
             result = userRepository.searchByName(name, PageRequest.of(page - 1, 10));
-        if(activity!=null && !activity.isEmpty())
+        else if (activity != null && !activity.isEmpty())
             result = userRepository.searchByActivityTitle(activity,PageRequest.of(page-1,10));
         else
             result = userRepository.findAll(PageRequest.of(page - 1, 10));

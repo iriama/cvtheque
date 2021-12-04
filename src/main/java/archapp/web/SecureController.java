@@ -1,9 +1,6 @@
 package archapp.web;
 
-import archapp.dto.ActivityDto;
-import archapp.dto.PersonDto;
-import archapp.dto.UserDto;
-import archapp.dto.UserEditDto;
+import archapp.dto.*;
 import archapp.model.Activity;
 import archapp.model.User;
 import archapp.repository.ActivityRepository;
@@ -16,12 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedList;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/secure")
 @RequiredArgsConstructor
-public class AccountController {
+public class SecureController {
 
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
@@ -103,8 +99,24 @@ public class AccountController {
 
         modelMapper.map(activityDto, activity);
         activityRepository.save(activity);
+        current.calculate(); // recalculate
 
-        return modelMapper.map(userRepository.save(current), PersonDto.class);
+        return modelMapper.map(current, PersonDto.class);
+    }
+
+    @PostMapping("/invite")
+    public UserDto invite(HttpServletRequest request, HttpServletResponse response, @RequestBody UserInviteDto infos) {
+        User current = userService.whoami(request);
+        if (current == null) {
+            response.setStatus(401);
+            return null;
+        }
+        // encode password
+        // TODO: validation
+        infos.setPassword( passwordEncoder.encode(infos.getPassword()) );
+        User user = new User();
+        modelMapper.map(infos, user);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
 }

@@ -37,7 +37,7 @@ public class User {
 
     @PostLoad
     public void calculate() {
-        activities.sort( (a, b) -> b.getYear() == a.getYear() ? b.getUpdatedOn().compareTo(a.getUpdatedOn()) : b.getYear() > a.getYear() ? 1 : -1 );
+        activities.sort( (a, b) -> b.getYear() == a.getYear() && a.getUpdatedOn() != null && b.getUpdatedOn() != null ? b.getUpdatedOn().compareTo(a.getUpdatedOn()) : b.getYear() > a.getYear() ? 1 : -1 );
         if (birthdate != null) setAge(Period.between(birthdate, LocalDate.now()).getYears());
         professionalTitles = new ArrayList<>();
         for (Activity activity: activities) {
@@ -46,10 +46,6 @@ public class User {
         }
     }
 
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
     public User(String email, String password, String firstname, String lastname, String website) {
         this.firstname = firstname;
         this.lastname = lastname;
