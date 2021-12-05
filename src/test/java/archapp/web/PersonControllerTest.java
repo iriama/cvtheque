@@ -41,7 +41,7 @@ class PersonControllerTest {
                 "http://test1.com"
         );
 
-        userRepository.save(test1);
+        test1 = userRepository.save(test1);
     }
 
     @AfterAll
@@ -60,7 +60,7 @@ class PersonControllerTest {
 
     @Test
     void getUserById() {
-        client.get().uri("/api/persons/1").exchange()
+        client.get().uri("/api/persons/" + test1.getId()).exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath("$.firstname").isEqualTo(test1.getFirstname());
