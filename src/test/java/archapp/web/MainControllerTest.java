@@ -24,7 +24,7 @@ class MainControllerTest {
     void index() {
         client.get().uri("/").exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.TEXT_HTML)
+                .expectHeader().contentType("text/html;charset=UTF-8")
                 .expectBody();
     }
 }
