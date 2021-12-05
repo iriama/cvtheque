@@ -115,8 +115,7 @@ public class SecureController {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
-        // encode password
-        // TODO: validation
+        
         infos.setPassword( passwordEncoder.encode(infos.getPassword()) );
         User user = new User();
         modelMapper.map(infos, user);
