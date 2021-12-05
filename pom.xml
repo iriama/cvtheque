@@ -9,11 +9,11 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>fr.univ-amu</groupId>
-    <artifactId>projet-archapp</artifactId>
+    <artifactId>cvtheque</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>projet-archapp</name>
-    <description>projet-archapp</description>
+    <name>cvtheque</name>
+    <description>Devoir M2 Archi. des application</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -88,7 +88,6 @@
             <version>2.12.5</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -104,5 +103,6 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>${project.artifactId}-${project.version}</finalName>
     </build>
 </project>
