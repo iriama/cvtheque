@@ -1,5 +1,6 @@
 package archapp.dto;
 
+import archapp.validation.EmailUnique;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -19,6 +20,7 @@ public class UserInviteDto {
     private String lastname;
 
     @NotBlank(message = "BLANK")
+    @EmailUnique(message = "UNIQUE_EMAIL")
     @Email(message = "FORMAT")
     private String email;
 

@@ -8,10 +8,12 @@ import archapp.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.HibernateValidator;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -22,6 +24,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -68,8 +71,10 @@ public class SpringConfiguration extends SpringBootServletInitializer {
     }
 
     @Bean
-    public Validator validator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    public Validator validator(final AutowireCapableBeanFactory autowireCapableBeanFactory) {
+        ValidatorFactory factory = Validation.byProvider( HibernateValidator.class )
+                .configure().constraintValidatorFactory(new SpringConstraintValidatorFactory(autowireCapableBeanFactory))
+                .buildValidatorFactory();
         return factory.getValidator();
     }
 

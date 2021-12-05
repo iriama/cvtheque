@@ -34,6 +34,10 @@ public class UserService {
         }
     }
 
+    public boolean exist(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
     public String signup(User user) {
         if (!userRepository.existsByEmail(user.getEmail())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
