@@ -33,7 +33,7 @@ build/
 .vscode/
 
 # static folder
-/src/main/resources/static/*
+# /src/main/resources/static/*
 # except structure
-!/src/main/resources/static/.gitkeep
+# !/src/main/resources/static/.gitkeep
 
