@@ -6,13 +6,23 @@ import archapp.model.User;
 import archapp.repository.ActivityRepository;
 import archapp.repository.UserRepository;
 import archapp.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/secure")
@@ -24,6 +34,20 @@ public class SecureController {
     private final ActivityRepository activityRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public void handleValidationExceptions(ConstraintViolationException exception, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        Map<String, String> errors = new HashMap<>();
+        exception.getConstraintViolations().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getMessage();
+            errors.put(fieldName, "lambda");
+        });
+
+        response.sendError(HttpStatus.BAD_REQUEST.value(), objectMapper.writeValueAsString(errors));
+    }
 
     @GetMapping("/account")
     public UserDto account(HttpServletRequest request) {
@@ -31,7 +55,7 @@ public class SecureController {
     }
 
     @PutMapping("/account")
-    public UserDto editAccount(HttpServletRequest request, HttpServletResponse response, @RequestBody UserEditDto edited) {
+    public UserDto editAccount(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody UserEditDto edited) {
         User current = userService.whoami(request);
         if (current == null || current.getId() != edited.getId()) {
             response.setStatus(401);
@@ -65,7 +89,7 @@ public class SecureController {
     }
 
     @PostMapping("/account/activity")
-    public PersonDto addActivity(HttpServletRequest request, HttpServletResponse response, @RequestBody ActivityDto activityDto) {
+    public PersonDto addActivity(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody ActivityDto activityDto) {
         User current = userService.whoami(request);
         if (current == null) {
             response.setStatus(401);
@@ -84,7 +108,7 @@ public class SecureController {
     }
 
     @PutMapping("/account/activity")
-    public PersonDto editActivity(HttpServletRequest request, HttpServletResponse response, @RequestBody ActivityDto activityDto) {
+    public PersonDto editActivity(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody ActivityDto activityDto) {
         User current = userService.whoami(request);
         if (current == null) {
             response.setStatus(401);
@@ -105,7 +129,7 @@ public class SecureController {
     }
 
     @PostMapping("/invite")
-    public UserDto invite(HttpServletRequest request, HttpServletResponse response, @RequestBody UserInviteDto infos) {
+    public UserDto invite(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody UserInviteDto infos) {
         User current = userService.whoami(request);
         if (current == null) {
             response.setStatus(401);
