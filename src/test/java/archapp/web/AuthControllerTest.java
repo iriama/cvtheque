@@ -1,6 +1,6 @@
 package archapp.web;
 
-
+import archapp.dto.UserAuthDto;
 import archapp.model.User;
 import archapp.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
@@ -14,11 +14,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "spring.profiles.active:test")
-class PersonControllerTest {
+class AuthControllerTest {
+
+    @Autowired
+    private WebTestClient client;
 
     @Autowired
     private UserRepository userRepository;
@@ -26,10 +30,9 @@ class PersonControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private WebTestClient client;
-
     private User test1;
+    private UserAuthDto authValid;
+    private UserAuthDto authInvalid;
 
     @BeforeAll
     public void setup() {
@@ -41,6 +44,14 @@ class PersonControllerTest {
                 "http://test1.com"
         );
 
+        authInvalid = new UserAuthDto();
+        authInvalid.setEmail("test1@mail.com");
+        authInvalid.setPassword("test12345");
+
+        authValid = new UserAuthDto();
+        authValid.setEmail("test1@mail.com");
+        authValid.setPassword("test1234");
+
         userRepository.save(test1);
     }
 
@@ -49,20 +60,23 @@ class PersonControllerTest {
         userRepository.deleteAll();
     }
 
-
     @Test
-    void persons() {
-        client.get().uri("/api/persons").exchange()
+    void signinValid() {
+        client.post().uri("/api/signin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(authValid), UserAuthDto.class)
+                .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath("$[0].firstname").isEqualTo(test1.getFirstname());
+                .expectHeader().contentType("text/plain;charset=UTF-8")
+                .expectBody();
     }
 
     @Test
-    void getUserById() {
-        client.get().uri("/api/persons/1").exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath("$.firstname").isEqualTo(test1.getFirstname());
+    void signinInvalid() {
+        client.post().uri("/api/signin", authInvalid)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(authInvalid), UserAuthDto.class)
+                .exchange()
+                .expectStatus().is5xxServerError();
     }
 }
