@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
-import javax.validation.Constraint;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -18,7 +17,7 @@ public class ActivityDto {
     private Long id;
 
     @NotBlank(message = "BLANK")
-    @Length(min = 4, max = 16, message = "LENGTH_4_16")
+    @Length(min = 4, max = 100, message = "LENGTH_4_100")
     private String title;
 
     @Length(min = 10, max = 3000, message = "LENGTH_10_3000")

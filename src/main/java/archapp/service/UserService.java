@@ -15,6 +15,7 @@ import archapp.model.User;
 import archapp.repository.UserRepository;
 import archapp.security.JwtTokenProvider;
 
+@SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
 public class UserService {

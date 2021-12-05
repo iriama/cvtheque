@@ -6,9 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Null;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor

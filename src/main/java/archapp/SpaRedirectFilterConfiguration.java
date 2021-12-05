@@ -23,7 +23,7 @@ public class SpaRedirectFilterConfiguration {
     ResourceLoader resourceLoader;
 
     @Bean
-    public FilterRegistrationBean spaRedirectFiler() {
+    public FilterRegistrationBean<?> spaRedirectFiler() {
         FilterRegistrationBean<OncePerRequestFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(createRedirectFilter());
         registration.addUrlPatterns("/*");
@@ -47,7 +47,6 @@ public class SpaRedirectFilterConfiguration {
                     rd.forward(req, res);
                 } else {
                     chain.doFilter(req, res);
-                    return;
                 }
             }
         };

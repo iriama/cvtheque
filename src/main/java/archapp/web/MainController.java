@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
 
+    @SuppressWarnings("SameReturnValue")
     @GetMapping("/")
-    public String index() {
+    public final String index() {
         return "index.html";
     }
 

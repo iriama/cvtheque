@@ -6,25 +6,17 @@ import archapp.model.User;
 import archapp.repository.ActivityRepository;
 import archapp.repository.UserRepository;
 import archapp.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/secure")
@@ -70,7 +62,7 @@ public class SecureController {
             return null;
         }
 
-        current.getActivities().removeIf(a -> a.getId() == id);
+        current.getActivities().removeIf(a -> Objects.equals(a.getId(), id));
         current.calculate(); // recalculate
         return modelMapper.map(userRepository.save(current), PersonDto.class);
     }
@@ -102,12 +94,13 @@ public class SecureController {
             return null;
         }
 
-        Activity activity = current.getActivities().stream().filter(a -> a.getId() == activityDto.getId()).findAny().get();
-        if (activity == null) {
+        Optional<Activity> activityOpt = current.getActivities().stream().filter(a -> a.getId().equals(activityDto.getId())).findAny();
+        if (!activityOpt.isPresent()) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
+        Activity activity = activityOpt.get();
         modelMapper.map(activityDto, activity);
         activityRepository.save(activity);
         current.calculate(); // recalculate

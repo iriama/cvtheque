@@ -2,8 +2,6 @@ package archapp.model;
 
 
 import archapp.enumeration.ActivityType;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,10 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "activity")
 @NoArgsConstructor
 @Data
 public class Activity {
@@ -26,7 +22,7 @@ public class Activity {
     private String description;
     private String website;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_activity")
+    @JoinColumn
     private User owner;
 
     @UpdateTimestamp
@@ -39,8 +35,4 @@ public class Activity {
         this.title = title;
     }
 
-    @PreRemove
-    public void preRemove() {
-        //getOwner().setActivities(getOwner().getActivities().stream().filter(a -> a.getId() == getId()).collect(Collectors.toList()));
-    }
 }
