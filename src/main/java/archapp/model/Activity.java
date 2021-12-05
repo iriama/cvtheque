@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Data
 public class Activity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+
     @NotNull private int year;
     @NotNull private ActivityType type;
     @NotNull private String title;

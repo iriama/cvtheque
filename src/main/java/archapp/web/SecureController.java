@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,12 @@ import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/secure")
@@ -34,20 +36,6 @@ public class SecureController {
     private final ActivityRepository activityRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final ObjectMapper objectMapper;
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public void handleValidationExceptions(ConstraintViolationException exception, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        Map<String, String> errors = new HashMap<>();
-        exception.getConstraintViolations().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getMessage();
-            errors.put(fieldName, "lambda");
-        });
-
-        response.sendError(HttpStatus.BAD_REQUEST.value(), objectMapper.writeValueAsString(errors));
-    }
 
     @GetMapping("/account")
     public UserDto account(HttpServletRequest request) {
@@ -58,11 +46,10 @@ public class SecureController {
     public UserDto editAccount(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody UserEditDto edited) {
         User current = userService.whoami(request);
         if (current == null || current.getId() != edited.getId()) {
-            response.setStatus(401);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
 
-        // TODO: validation
         if (edited.getPassword() != null && !edited.getPassword().equals("")) {
             edited.setPassword( passwordEncoder.encode(edited.getPassword()) );
         } else {
@@ -79,7 +66,7 @@ public class SecureController {
     public PersonDto deleteActivity(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
         User current = userService.whoami(request);
         if (current == null) {
-            response.setStatus(401);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
 
@@ -92,7 +79,7 @@ public class SecureController {
     public PersonDto addActivity(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody ActivityDto activityDto) {
         User current = userService.whoami(request);
         if (current == null) {
-            response.setStatus(401);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
 
@@ -111,13 +98,13 @@ public class SecureController {
     public PersonDto editActivity(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody ActivityDto activityDto) {
         User current = userService.whoami(request);
         if (current == null) {
-            response.setStatus(401);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
 
         Activity activity = current.getActivities().stream().filter(a -> a.getId() == activityDto.getId()).findAny().get();
         if (activity == null) {
-            response.setStatus(404);
+            response.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -132,7 +119,7 @@ public class SecureController {
     public UserDto invite(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody UserInviteDto infos) {
         User current = userService.whoami(request);
         if (current == null) {
-            response.setStatus(401);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
         // encode password

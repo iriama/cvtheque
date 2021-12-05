@@ -33,21 +33,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "BLANK")
-    @Length(min = 2, max = 16, message = "LENGTH_2_16")
-    private String firstname;
+    @NotNull private String firstname;
+    @NotNull private String lastname;
 
-    @NotBlank(message = "BLANK")
-    @Length(min = 2, max = 16, message = "LENGTH_2_16")
-    private String lastname;
+    @NotNull private String email;
 
-    @NotBlank(message = "BLANK")
-    @Email(message = "FORMAT")
-    private String email;
-
-    @URL(message = "FORMAT")
     private String website;
-
     private LocalDate birthdate;
 
     @NotNull private String password;
